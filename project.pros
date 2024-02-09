@@ -1,27 +1,35 @@
 {
     "py/object": "pros.conductor.project.Project",
     "py/state": {
-        "project_name": "VexBot",
+        "project_name": "EZ-Template-Example",
         "target": "v5",
         "templates": {
-            "autoSelect": {
-                "location": "C:\\Users\\jackc\\AppData\\Roaming\\PROS\\templates\\autoSelect@2.1.4",
+            "EZ-Template": {
+                "location": "C:\\Users\\union\\AppData\\Roaming\\PROS\\templates\\EZ-Template@3.0.0",
                 "metadata": {
                     "origin": "local"
                 },
-                "name": "autoSelect",
+                "name": "EZ-Template",
                 "py/object": "pros.conductor.templates.local_template.LocalTemplate",
-                "supported_kernels": "^3.2.1",
+                "supported_kernels": "^3.8.0",
                 "system_files": [
-                    "include\\autoSelect\\selection.h",
-                    "firmware\\autoSelect.a"
+                    "include\\EZ-Template\\slew.hpp",
+                    "include\\EZ-Template\\api.hpp",
+                    "include\\EZ-Template\\sdcard.hpp",
+                    "include\\EZ-Template\\drive\\drive.hpp",
+                    "include\\EZ-Template\\auton.hpp",
+                    "include\\EZ-Template\\piston.hpp",
+                    "include\\EZ-Template\\util.hpp",
+                    "firmware\\EZ-Template.a",
+                    "include\\EZ-Template\\auton_selector.hpp",
+                    "include\\EZ-Template\\PID.hpp"
                 ],
                 "target": "v5",
                 "user_files": [],
-                "version": "2.1.4"
+                "version": "3.0.0"
             },
             "kernel": {
-                "location": "/Users/carlossalazar/Library/Application Support/PROS/templates/kernel@3.8.0",
+                "location": "C:\\Users\\union\\AppData\\Roaming\\PROS\\templates\\kernel@3.8.0",
                 "metadata": {
                     "cold_addr": "58720256",
                     "cold_output": "bin/cold.package.bin",
@@ -182,7 +190,7 @@
                 "version": "3.8.0"
             },
             "okapilib": {
-                "location": "/Users/carlossalazar/Library/Application Support/PROS/templates/okapilib@4.8.0",
+                "location": "C:\\Users\\union\\AppData\\Roaming\\PROS\\templates\\okapilib@4.8.0",
                 "metadata": {
                     "origin": "pros-mainline"
                 },
@@ -324,8 +332,6 @@
                 "version": "4.8.0"
             }
         },
-        "upload_options": {
-            "description": "Team 1939 VEX Base"
-        }
+        "upload_options": {}
     }
 }
