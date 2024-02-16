@@ -1,12 +1,42 @@
-// #include "main.h"
-#include "robot.hpp"
-Triball triball = Triball();
-/////
-// For installation, upgrading, documentations and tutorials, check out our website!
-// https://ez-robotics.github.io/EZ-Template/
-/////
+#include "main.h"
+class Triball {
 
 
+    public:
+        Triball() {
+            flywheelMotor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+            Intake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+        }
+
+        void shoot() {
+            if (master.get_digital(DIGITAL_R1)) {
+                flywheelMotor = -127;
+            } else {if (master.get_digital(DIGITAL_R2)) {
+                flywheelMotor = 127;
+            } else {
+                flywheelMotor = 0;
+            }}
+        }
+
+        
+
+        void intake() {
+            if (partner.get_digital(DIGITAL_R1)) {
+                Intake = 127; //intake
+            } else {if (partner.get_digital(DIGITAL_R2)) {
+                Intake = -127; //outake
+            } else {
+                Intake = 0;
+            }}
+        }
+
+        void plow() {
+            wings.button_toggle(master.get_digital(DIGITAL_L2));
+        };
+
+
+};
 // Chassis constructor
 ez::Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
@@ -18,7 +48,7 @@ ez::Drive chassis (
   ,{2, 3, -1}
 
   // IMU Port
-  ,6
+  ,IMU_port
 
   // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
   ,3.25
@@ -30,8 +60,42 @@ ez::Drive chassis (
   // eg. if your drive is 84:36 where the 36t is powered, your RATIO would be 84/36 which is 2.333
   // eg. if your drive is 60:36 where the 36t is powered, your RATIO would be 60/36 which is 0.6
   // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 36/60 which is 0.6
-  ,1.6666
+  ,.6
 );
+class DT {
+  public:
+    void TurnPID (double target, double max, double swing){ //target is the angle to turn to. Max is the maximum power up to 127. swing is a way to change the turn radius. Negative moves the wheel on that point
+     double Pi = imu_sensor.get_yaw(); //defines initital position
+     double P = target - Pi;
+     if (abs(P)>180){
+      target = (180-abs(target))*target/abs(target);
+      P = target - Pi;} //redefines target to give shortest path. if 
+     while(abs(P)>.1){
+      double kP = .1;
+      double kI = 0;
+      double kD = 0;
+      double P0 = P; //copies our old p value before changing it
+      double P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
+      double I = imu_sensor.get_yaw()-Pi; //defines integral
+      double D = (P-P0)/10; //derivative as degrees/ms
+      double power = (kP*P + kI*I + kD*D); //puts all our statements together
+      if (abs(power) > max) { // limits the maximum power, keeps the sign of the power
+        power = max*(power/abs(power));
+      }
+      chassis.drive_set(-power, power);
+      pros::delay(10);
+    };
+    };
+};
+Triball triball = Triball();
+
+/////
+// For installation, upgrading, documentations and tutorials, check out our website!
+// https://ez-robotics.github.io/EZ-Template/
+/////
+
+
+
 
 
 
@@ -48,8 +112,8 @@ void initialize() {
   pros::delay(500); // Stop the user from doing anything while legacy ports configure
 
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(true); // Enables modifying the controller curve with buttons on the joysticks
-  chassis.opcontrol_drive_activebrake_set(0); // Sets the active brake kP. We recommend 0.1.
+  chassis.opcontrol_curve_buttons_toggle(false); // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_drive_activebrake_set(.1); // Sets the active brake kP. We recommend 0.1.
   chassis.opcontrol_curve_default_set(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)  
   default_constants(); // Set the drive to your own constants from autons.cpp!
 
@@ -59,7 +123,9 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-    Auton("Skills", skills),
+    Auton("skills",skills),
+    Auton("Close", close),
+    Auton("Far", far)
   });
 
   // Initialize chassis and auton selector
@@ -133,7 +199,7 @@ void autonomous() {
  */
 void opcontrol() {
   // This is preference to what you like to drive on
-  chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
   
   while (true) {
     
@@ -144,28 +210,107 @@ void opcontrol() {
       //  When enabled: 
       //  * use A and Y to increment / decrement the constants
       //  * use the arrow keys to navigate the constants
-      if (master.get_digital_new_press(DIGITAL_X)) 
-        chassis.pid_tuner_toggle();
+      // if (master.get_digital_new_press(DIGITAL_X)) 
+      //   chassis.pid_tuner_toggle();
         
       // Trigger the selected autonomous routine
       if (master.get_digital_new_press(DIGITAL_B)) 
         autonomous();
 
-      chassis.pid_tuner_iterate(); // Allow PID Tuner to iterate
+      // chassis.pid_tuner_iterate(); // Allow PID Tuner to iterate
     } 
 
     //chassis.opcontrol_tank(); // Tank control
-     chassis.opcontrol_arcade_standard(ez::SPLIT); // Standard split arcade
+    chassis.opcontrol_arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT); // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE); // Flipped single arcade
 
     // . . .
     // Put more user control code here!
-    triball.shoot();
+    // . . .
     triball.intake();
     triball.plow();
-
+    triball.shoot();   
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+
+    };
+  
   }
-}
+
+
+/////
+// For installation, upgrading, documentations and tutorials, check out our website!
+// https://ez-robotics.github.io/EZ-Template/
+/////
+
+// These are out of 127
+// const int DRIVE_SPEED = 127;  
+// const int TURN_SPEED = 90;
+// const int SWING_SPEED = 90;
+
+// ///
+// // Constants
+// ///
+// void default_constants() {
+//   chassis.pid_heading_constants_set(3, 0, 20);
+//   chassis.pid_drive_constants_set(0.45, 0, 5);
+//   chassis.pid_turn_constants_set(3, 0, 20);
+//   chassis.pid_swing_constants_set(5, 0, 30);
+
+//   chassis.pid_turn_exit_condition_set(300_ms, 3_deg, 500_ms, 7_deg, 750_ms, 750_ms);
+//   chassis.pid_swing_exit_condition_set(300_ms, 3_deg, 500_ms, 7_deg, 750_ms, 750_ms);
+//   chassis.pid_drive_exit_condition_set(300_ms, 1_in, 500_ms, 3_in, 750_ms, 750_ms);
+
+//   chassis.slew_drive_constants_set(7_in, 80);
+// }
+
+
+void close(){
+  Intake = -127; //outtakes a preloaded alliance triball into a staged triball to give 4 points to the alliance
+  chassis.drive_set(-60,-60); //back up to avoid touching triball on accident
+  pros::delay(300); 
+};
+
+
+void closeWP(){};
+void far(
+){
+  chassis.drive_set(-80,-80); //slams an alliance triball into the goal
+  pros::delay(1200);
+  chassis.drive_set(60,60);
+  pros::delay(800); //drives forward to void touching triball
+};
+void farWP(){};
+
+
+
+void skills() {
+
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
+  flywheelMotor = -127;
+  pros::delay(60); //runs the flywheel for the time we want
+  chassis.drive_set(-60,60);
+  pros::delay(500); //turns to face the goal
+  Intake = -127; // ejects the preload
+  chassis.drive_set(60,60);
+  pros::delay(600); //drives into the goal
+  Intake = 0;
+  chassis.drive_set(-30,-30); 
+  pros::delay(200);//backs up
+  chassis.drive_set(60,60);
+  pros::delay(300); //rams the triball again
+  chassis.drive_set(-60,-60);
+  pros::delay(1000); //drives to by the wall
+  chassis.drive_set(-60,60);
+  pros::delay(300); //turns to be "down the tunnel"
+  chassis.drive_set(-127,-127);
+  pros::delay(1500); //kachow
+
+};
+void nothing();
+
+
+// . . .
+// Make your own autonomous functions here!
+// . . .

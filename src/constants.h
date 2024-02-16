@@ -18,3 +18,7 @@ pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 // Pneumatic controls here
 //pros::ADIDigitalOut piston1 (2);
 ez:: Piston wings(2);
+
+//IMU declaration
+int IMU_port = 6;
+pros::Imu imu_sensor(IMU_port);

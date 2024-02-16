@@ -45,6 +45,7 @@
 
 // More includes here...
 #include "autons.hpp"
+#include "../src/constants.h"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
@@ -56,9 +57,9 @@
  */
 // using namespace pros;
 // using namespace pros::literals;
-// using namespace okapi;
+using namespace okapi;
 // using namespace ez;
-using namespace okapi::literals;
+//using namespace okapi::literals;
 
 /**
  * Prototypes for the competition control tasks are redefined here to ensure
@@ -86,23 +87,4 @@ void opcontrol(void);
 #endif
 
 #endif  // _PROS_MAIN_H_
-// Declarations for systems motors
 
-pros::Motor flywheelMotor (4, pros::E_MOTOR_GEARSET_06);
-pros::Motor Intake (7);
-
-
-//Flywheel PID
-ez::PID flywheelPID{1,.001, 4, 100, "Flywheel"};
-double flywheelTarget = 2600;
-
-
-// Controllers
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-pros::Controller partner(pros::E_CONTROLLER_PARTNER);
-
-
-
-// Pneumatic controls here
-//pros::ADIDigitalOut piston1 (2);
-ez:: Piston wings(2);
