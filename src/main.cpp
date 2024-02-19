@@ -1,4 +1,4 @@
-#include "main.h"
+#include ".../include/main.h"
 class Triball {
 
 
@@ -65,28 +65,51 @@ ez::Drive chassis (
 class DT {
   public:
     void TurnPID (double target, double max, double swing){ //target is the angle to turn to. Max is the maximum power up to 127. swing is a way to change the turn radius. Negative moves the wheel on that point
-     double Pi = imu_sensor.get_yaw(); //defines initital position
-     double P = target - Pi;
-     if (abs(P)>180){
-      target = (180-abs(target))*target/abs(target); // TODO check order of operations
-      P = target - Pi;} //redefines target to give shortest path. if 
-     while(abs(P)>.1){
       double kP = .1;
       double kI = 0;
       double kD = 0;
+     double Pi = imu_sensor.get_yaw(); //defines initital position
+     double P = target - Pi; // sets initialy error
+     double D = 0
+     if (fabs(P)>180){
+      target = (180-fabs(target))*target/fabs(target); // TODO check order of operations
+      P = target - Pi;} //redefines target to give shortest path. if 
+     while(fabs(P)>.1 && fabs(D)>0){
       double P0 = P; //copies our old p value before changing it
       double P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
-      double I = imu_sensor.get_yaw()-Pi; //defines integral
+      double I += P; //defines integral
       double D = (P-P0)/10.0; //derivative as degrees/ms
       double power = (kP*P + kI*I + kD*D); //puts all our statements together
-      if (abs(power) > max) { // limits the maximum power, keeps the sign of the power
-        power = max*(power/abs(power));
+      if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
+        power = max*(power/fabs(power));
+      }
+      chassis.drive_set(-power, power);
+      pros::delay(10);
+    };
+    };
+      public:
+    void DrivePID (double target, double max){ //target is the positio to drive to in inches. Max is the maximum power up to 127. 
+      double kP = .1;
+      double kI = 0;
+      double kD = 0;
+      chassis.drive_sensor_reset(); //zeroes the encoders
+      double P = target// sets initial error
+      double D = 0 // sets inital derivative
+     while(fabs(P)>.1 && fabs(D)>0){
+      double P0 = P; //copies our old p value before changing it
+      double P = target - (3.25*6.28318530718 * 36/60/300 * (chassis.drive_sensor_right()+drive_sensor_left())/2);//iterates error, inches = wheelsize [in] * 2pi [1/revW] * pinionteeth [revM]/driventeeth[revW] / encoderclicks/revM [1/revM] * encoderclicks [UL]
+      double I += P; //defines integral
+      double D = (P-P0)/10.0; //derivative as degrees/ms
+      double power = (kP*P + kI*I + kD*D); //puts all our statements together
+      if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
+        power = max*(power/fabs(power));
       }
       chassis.drive_set(-power, power);
       pros::delay(10);
     };
     };
 };
+
 Triball triball = Triball();
 DT PDrive = DT();
 
