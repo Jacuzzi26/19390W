@@ -68,7 +68,7 @@ class DT {
      double Pi = imu_sensor.get_yaw(); //defines initital position
      double P = target - Pi;
      if (abs(P)>180){
-      target = (180-abs(target))*target/abs(target);
+      target = (180-abs(target))*target/abs(target); // TODO check order of operations
       P = target - Pi;} //redefines target to give shortest path. if 
      while(abs(P)>.1){
       double kP = .1;
@@ -77,7 +77,7 @@ class DT {
       double P0 = P; //copies our old p value before changing it
       double P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
       double I = imu_sensor.get_yaw()-Pi; //defines integral
-      double D = (P-P0)/10; //derivative as degrees/ms
+      double D = (P-P0)/10.0; //derivative as degrees/ms
       double power = (kP*P + kI*I + kD*D); //puts all our statements together
       if (abs(power) > max) { // limits the maximum power, keeps the sign of the power
         power = max*(power/abs(power));
@@ -115,7 +115,7 @@ void initialize() {
   chassis.opcontrol_curve_buttons_toggle(false); // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(.1); // Sets the active brake kP. We recommend 0.1.
   chassis.opcontrol_curve_default_set(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)  
-  default_constants(); // Set the drive to your own constants from autons.cpp!
+  //default_constants(); // Set the drive to your own constants from autons.cpp!
 
   // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
   // chassis.opcontrol_curve_buttons_left_set (pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT); // If using tank, only the left side is used. 
@@ -288,24 +288,37 @@ void farWP(){};
 void skills() {
 
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
-  flywheelMotor = -127;
-  pros::delay(60); //runs the flywheel for the time we want
-  chassis.drive_set(-60,60);
-  pros::delay(500); //turns to face the goal
-  Intake = -127; // ejects the preload
-  chassis.drive_set(60,60);
-  pros::delay(600); //drives into the goal
-  Intake = 0;
-  chassis.drive_set(-30,-30); 
-  pros::delay(200);//backs up
-  chassis.drive_set(60,60);
-  pros::delay(300); //rams the triball again
+  flywheelMotor = 30;
   chassis.drive_set(-60,-60);
-  pros::delay(1000); //drives to by the wall
+pros::delay(1000);
+chassis.drive_set(-60,0);
+pros::delay(300);
+wings.set(true);
+  flywheelMotor = 127;
+  pros::delay(30000); //runs the flywheel for the time we want
+  wings.set(false);
+  flywheelMotor=0;
+  pros::delay(300);
   chassis.drive_set(-60,60);
-  pros::delay(300); //turns to be "down the tunnel"
-  chassis.drive_set(-127,-127);
-  pros::delay(1500); //kachow
+  pros::delay(900); //turns to face the goal
+  chassis.drive_set(-60,-60);
+  pros::delay(1100); //drives to by the wall
+  chassis.drive_set(-60,60);
+  pros::delay(150); //turns to be "down the tunnel"
+  chassis.drive_set(-80,-80);
+  pros::delay(1800); //kachow
+  chassis.drive_set(60,-60);
+  pros::delay(600);
+  chassis.drive_set(-60,-60);
+  wings.set(true);
+  pros::delay(700);
+    chassis.drive_set(60,60);
+  pros::delay(500);
+    chassis.drive_set(-60,-60);
+  pros::delay(500);
+  chassis.drive_set(60,60);
+  pros::delay(5000);
+
 
 };
 void nothing();
