@@ -1,4 +1,4 @@
-#include ".../include/main.h"
+#include "C:\Users\jackc\OneDrive\Desktop\Homework\Robotics\Vex\Over Under 23-24\COde\19390W\include\main.h"
 class Triball {
 
 
@@ -70,15 +70,16 @@ class DT {
       double kD = 0;
      double Pi = imu_sensor.get_yaw(); //defines initital position
      double P = target - Pi; // sets initialy error
-     double D = 0
+     double I = 0;
+     double D = 0;
      if (fabs(P)>180){
       target = (180-fabs(target))*target/fabs(target); // TODO check order of operations
       P = target - Pi;} //redefines target to give shortest path. if 
      while(fabs(P)>.1 && fabs(D)>0){
       double P0 = P; //copies our old p value before changing it
-      double P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
-      double I += P; //defines integral
-      double D = (P-P0)/10.0; //derivative as degrees/ms
+      P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
+      I += P; //defines integral
+      D = (P-P0)/10.0; //derivative as degrees/ms
       double power = (kP*P + kI*I + kD*D); //puts all our statements together
       if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
         power = max*(power/fabs(power));
@@ -93,18 +94,19 @@ class DT {
       double kI = 0;
       double kD = 0;
       chassis.drive_sensor_reset(); //zeroes the encoders
-      double P = target// sets initial error
-      double D = 0 // sets inital derivative
+      double P = target;// sets initial error
+      double I = 0;
+      double D = 0; // sets inital derivative
      while(fabs(P)>.1 && fabs(D)>0){
       double P0 = P; //copies our old p value before changing it
-      double P = target - (3.25*6.28318530718 * 36/60/300 * (chassis.drive_sensor_right()+drive_sensor_left())/2);//iterates error, inches = wheelsize [in] * 2pi [1/revW] * pinionteeth [revM]/driventeeth[revW] / encoderclicks/revM [1/revM] * encoderclicks [UL]
-      double I += P; //defines integral
-      double D = (P-P0)/10.0; //derivative as degrees/ms
+      P = target - (3.25*6.28318530718 * 36/60/300 * (chassis.drive_sensor_right()+chassis.drive_sensor_left())/2);//iterates error, inches = wheelsize [in] * 2pi [1/revW] * pinionteeth [revM]/driventeeth[revW] / encoderclicks/revM [1/revM] * encoderclicks [UL]
+      I += P; //defines integral
+      D = (P-P0)/10.0; //derivative as inches/ms
       double power = (kP*P + kI*I + kD*D); //puts all our statements together
       if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
         power = max*(power/fabs(power));
       }
-      chassis.drive_set(-power, power);
+      chassis.drive_set(power, power);
       pros::delay(10);
     };
     };
