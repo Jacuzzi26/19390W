@@ -23,9 +23,9 @@ class Triball {
 
         void intake() {
             if (partner.get_digital(DIGITAL_R1)) {
-                Intake = 127; //intake
+                Intake = -127; //intake
             } else {if (partner.get_digital(DIGITAL_R2)) {
-                Intake = -127; //outake
+                Intake = 127; //outake
             } else {
                 Intake = 0;
             }}
@@ -41,11 +41,11 @@ class Triball {
 ez::Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is used as the sensor
-  {-10, -9, 8}
+  {-15, -20, 18}
 
   // Right Chassis Ports (negative port will reverse it!)
   //   the first port is used as the sensor
-  ,{2, 3, -1}
+  ,{16, 19, -17}
 
   // IMU Port
   ,IMU_port
@@ -228,18 +228,7 @@ void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
   
   while (true) {
-    
-    // PID Tuner
-    // After you find values that you're happy with, you'll have to set them in auton.cpp
     if (!pros::competition::is_connected()) { 
-      // Enable / Disable PID Tuner
-      //  When enabled: 
-      //  * use A and Y to increment / decrement the constants
-      //  * use the arrow keys to navigate the constants
-      // if (master.get_digital_new_press(DIGITAL_X)) 
-      //   chassis.pid_tuner_toggle();
-        
-      // Trigger the selected autonomous routine
       if (master.get_digital_new_press(DIGITAL_B)) 
         autonomous();
 
@@ -252,9 +241,6 @@ void opcontrol() {
     // chassis.opcontrol_arcade_flipped(ez::SPLIT); // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE); // Flipped single arcade
 
-    // . . .
-    // Put more user control code here!
-    // . . .
     triball.intake();
     triball.plow();
     triball.shoot();   

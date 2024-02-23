@@ -1,8 +1,8 @@
 
 // Declarations for systems motors
 
-pros::Motor flywheelMotor (4, pros::E_MOTOR_GEARSET_06);
-pros::Motor Intake (7);
+pros::Motor flywheelMotor (11, pros::E_MOTOR_GEARSET_06);
+pros::Motor Intake (14);
 double flywheelTarget = 2600;
 
 //Flywheel PID
@@ -20,5 +20,5 @@ pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 ez:: Piston wings(2);
 
 //IMU declaration
-int IMU_port = 6;
+int IMU_port = 12;
 pros::Imu imu_sensor(IMU_port);
