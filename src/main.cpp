@@ -38,7 +38,7 @@ class Triball {
 
 };
 // Chassis constructor
-ez::Drive chassis (
+ez::Drive EZchassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is used as the sensor
   {-15, -20, 18}
@@ -62,58 +62,58 @@ ez::Drive chassis (
   // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 36/60 which is 0.6
   ,.6
 );
-class DT {
-  public:
-    void TurnPID (double target, double max, double swing){ //target is the angle to turn to. Max is the maximum power up to 127. swing is a way to change the turn radius. Negative moves the wheel on that point
-      double kP = .1;
-      double kI = 0;
-      double kD = 0;
-     double Pi = imu_sensor.get_yaw(); //defines initital position
-     double P = target - Pi; // sets initialy error
-     double I = 0;
-     double D = 0;
-     if (fabs(P)>180){
-      target = (180-fabs(target))*target/fabs(target); // TODO check order of operations
-      P = target - Pi;} //redefines target to give shortest path. if 
-     while(fabs(P)>.1 && fabs(D)>0){
-      double P0 = P; //copies our old p value before changing it
-      P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
-      I += P; //defines integral
-      D = (P-P0)/10.0; //derivative as degrees/ms
-      double power = (kP*P + kI*I + kD*D); //puts all our statements together
-      if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
-        power = max*(power/fabs(power));
-      }
-      chassis.drive_set(-power, power);
-      pros::delay(10);
-    };
-    };
-      public:
-    void DrivePID (double target, double max){ //target is the positio to drive to in inches. Max is the maximum power up to 127. 
-      double kP = .1;
-      double kI = 0;
-      double kD = 0;
-      chassis.drive_sensor_reset(); //zeroes the encoders
-      double P = target;// sets initial error
-      double I = 0;
-      double D = 0; // sets inital derivative
-     while(fabs(P)>.1 && fabs(D)>0){
-      double P0 = P; //copies our old p value before changing it
-      P = target - (3.25*6.28318530718 * 36/60/300 * (chassis.drive_sensor_right()+chassis.drive_sensor_left())/2);//iterates error, inches = wheelsize [in] * 2pi [1/revW] * pinionteeth [revM]/driventeeth[revW] / encoderclicks/revM [1/revM] * encoderclicks [UL]
-      I += P; //defines integral
-      D = (P-P0)/10.0; //derivative as inches/ms
-      double power = (kP*P + kI*I + kD*D); //puts all our statements together
-      if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
-        power = max*(power/fabs(power));
-      }
-      chassis.drive_set(power, power);
-      pros::delay(10);
-    };
-    };
-};
+// class DT {
+//   public:
+//     void TurnPID (double target, double max, double swing){ //target is the angle to turn to. Max is the maximum power up to 127. swing is a way to change the turn radius. Negative moves the wheel on that point
+//       double kP = .1;
+//       double kI = 0;
+//       double kD = 0;
+//      double Pi = imu_sensor.get_yaw(); //defines initital position
+//      double P = target - Pi; // sets initialy error
+//      double I = 0;
+//      double D = 0;
+//      if (fabs(P)>180){
+//       target = (180-fabs(target))*target/fabs(target); // TODO check order of operations
+//       P = target - Pi;} //redefines target to give shortest path. if 
+//      while(fabs(P)>.1 && fabs(D)>0){
+//       double P0 = P; //copies our old p value before changing it
+//       P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
+//       I += P; //defines integral
+//       D = (P-P0)/10.0; //derivative as degrees/ms
+//       double power = (kP*P + kI*I + kD*D); //puts all our statements together
+//       if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
+//         power = max*(power/fabs(power));
+//       }
+//       chassis.drive_set(-power, power);
+//       pros::delay(10);
+//     };
+//     };
+//       public:
+//     void DrivePID (double target, double max){ //target is the positio to drive to in inches. Max is the maximum power up to 127. 
+//       double kP = .1;
+//       double kI = 0;
+//       double kD = 0;
+//       chassis.drive_sensor_reset(); //zeroes the encoders
+//       double P = target;// sets initial error
+//       double I = 0;
+//       double D = 0; // sets inital derivative
+//      while(fabs(P)>.1 && fabs(D)>0){
+//       double P0 = P; //copies our old p value before changing it
+//       P = target - (3.25*6.28318530718 * 36/60/300 * (chassis.drive_sensor_right()+chassis.drive_sensor_left())/2);//iterates error, inches = wheelsize [in] * 2pi [1/revW] * pinionteeth [revM]/driventeeth[revW] / encoderclicks/revM [1/revM] * encoderclicks [UL]
+//       I += P; //defines integral
+//       D = (P-P0)/10.0; //derivative as inches/ms
+//       double power = (kP*P + kI*I + kD*D); //puts all our statements together
+//       if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
+//         power = max*(power/fabs(power));
+//       }
+//       chassis.drive_set(power, power);
+//       pros::delay(10);
+//     };
+//     };
+// };
 
 Triball triball = Triball();
-DT PDrive = DT();
+//DT PDrive = DT();
 
 /////
 // For installation, upgrading, documentations and tutorials, check out our website!
@@ -138,9 +138,9 @@ void initialize() {
   pros::delay(500); // Stop the user from doing anything while legacy ports configure
 
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(false); // Enables modifying the controller curve with buttons on the joysticks
-  chassis.opcontrol_drive_activebrake_set(.1); // Sets the active brake kP. We recommend 0.1.
-  chassis.opcontrol_curve_default_set(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)  
+  EZchassis.opcontrol_curve_buttons_toggle(false); // Enables modifying the controller curve with buttons on the joysticks
+  EZchassis.opcontrol_drive_activebrake_set(.1); // Sets the active brake kP. We recommend 0.1.
+  EZchassis.opcontrol_curve_default_set(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)  
   //default_constants(); // Set the drive to your own constants from autons.cpp!
 
   // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
@@ -155,7 +155,9 @@ void initialize() {
   });
 
   // Initialize chassis and auton selector
-  chassis.initialize();
+  EZchassis.initialize();
+  LLchassis.calibrate();
+  LLchassis.setPose(0,0,0);
   ez::as::initialize();
   master.rumble(".");
 }
@@ -200,10 +202,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-  chassis.pid_targets_reset(); // Resets PID targets to 0
-  chassis.drive_imu_reset(); // Reset gyro position to 0
-  chassis.drive_sensor_reset(); // Reset drive sensors to 0
-  chassis.drive_brake_set(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency
+  EZchassis.drive_brake_set(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency
 
   ez::as::auton_selector.selected_auton_call(); // Calls selected auton from autonomous selector
 }
@@ -225,18 +224,17 @@ void autonomous() {
  */
 void opcontrol() {
   // This is preference to what you like to drive on
-  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
+  EZchassis.drive_brake_set(MOTOR_BRAKE_HOLD);
   
   while (true) {
     if (!pros::competition::is_connected()) { 
       if (master.get_digital_new_press(DIGITAL_B)) 
         autonomous();
 
-      // chassis.pid_tuner_iterate(); // Allow PID Tuner to iterate
     } 
 
     //chassis.opcontrol_tank(); // Tank control
-    chassis.opcontrol_arcade_standard(ez::SPLIT); // Standard split arcade
+    EZchassis.opcontrol_arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT); // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE); // Flipped single arcade
@@ -251,47 +249,22 @@ void opcontrol() {
   }
 
 
-/////
-// For installation, upgrading, documentations and tutorials, check out our website!
-// https://ez-robotics.github.io/EZ-Template/
-/////
-
-// These are out of 127
-// const int DRIVE_SPEED = 127;  
-// const int TURN_SPEED = 90;
-// const int SWING_SPEED = 90;
-
-// ///
-// // Constants
-// ///
-// void default_constants() {
-//   chassis.pid_heading_constants_set(3, 0, 20);
-//   chassis.pid_drive_constants_set(0.45, 0, 5);
-//   chassis.pid_turn_constants_set(3, 0, 20);
-//   chassis.pid_swing_constants_set(5, 0, 30);
-
-//   chassis.pid_turn_exit_condition_set(300_ms, 3_deg, 500_ms, 7_deg, 750_ms, 750_ms);
-//   chassis.pid_swing_exit_condition_set(300_ms, 3_deg, 500_ms, 7_deg, 750_ms, 750_ms);
-//   chassis.pid_drive_exit_condition_set(300_ms, 1_in, 500_ms, 3_in, 750_ms, 750_ms);
-
-//   chassis.slew_drive_constants_set(7_in, 80);
-// }
-
-
 void close(){
-  Intake = -127; //outtakes a preloaded alliance triball into a staged triball to give 4 points to the alliance
-  chassis.drive_set(-60,-60); //back up to avoid touching triball on accident
-  pros::delay(300); 
+
 };
 
 
-void closeWP(){};
-void far(
-){
-  chassis.drive_set(-80,-80); //slams an alliance triball into the goal
-  pros::delay(1200);
-  chassis.drive_set(60,60);
-  pros::delay(800); //drives forward to void touching triball
+void closeWP(){
+LLchassis.moveTo(0, 0, 5000); //init
+LLchassis.moveTo(7.222, 41.381, 5000); //drive to the goal
+Intake = 127; //outake
+LLchassis.moveTo(-6.051, 20.69, 5000);
+LLchassis.moveTo(-5.563, 7.515, 5000);
+LLchassis.moveTo(23.423, -19.324, 5000);
+
+};
+void far(){
+
 };
 void farWP(){};
 
@@ -299,39 +272,7 @@ void farWP(){};
 
 void skills() {
 
-  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
-  flywheelMotor = 30;
-  chassis.drive_set(-60,-60);
-pros::delay(1000);
-chassis.drive_set(-60,0);
-pros::delay(300);
-wings.set(true);
-  flywheelMotor = 127;
-  pros::delay(30000); //runs the flywheel for the time we want
-  wings.set(false);
-  flywheelMotor=0;
-  pros::delay(300);
-  chassis.drive_set(-60,60);
-  pros::delay(900); //turns to face the goal
-  chassis.drive_set(-60,-60);
-  pros::delay(1100); //drives to by the wall
-  chassis.drive_set(-60,60);
-  pros::delay(150); //turns to be "down the tunnel"
-  chassis.drive_set(-80,-80);
-  pros::delay(1800); //kachow
-  chassis.drive_set(60,-60);
-  pros::delay(600);
-  chassis.drive_set(-60,-60);
-  wings.set(true);
-  pros::delay(700);
-    chassis.drive_set(60,60);
-  pros::delay(500);
-    chassis.drive_set(-60,-60);
-  pros::delay(500);
-  chassis.drive_set(60,60);
-  pros::delay(5000);
-
-
+  
 };
 void nothing();
 
