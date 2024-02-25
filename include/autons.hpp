@@ -7,5 +7,6 @@ extern Drive chassis;
 void skills();
 void close();
 void far();
+void closeWP();
 
 void default_constants();

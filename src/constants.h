@@ -16,7 +16,9 @@ pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 
 // Pneumatic controls here
 //pros::ADIDigitalOut piston1 (2);
-ez:: Piston wings(2);
+ez:: Piston Rwing(2);
+ez:: Piston Lwing(3);
+ez:: Piston Hang(4);
 
 //IMU declaration
 int IMU_port = 12;
@@ -47,20 +49,27 @@ lemlib::OdomSensors_t sensors {
     nullptr, // we don't have a second tracking wheel, so we set it to nullptr
     &imu_sensor// inertial sensor
 };
+
+//Lemlib PID constants
+
+float kP = 20;
+float kD = 70;
+float TkP = 4;
+float TkD = 35;
 lemlib::ChassisController_t lateralController {
-    8, // kP
-    30, // kD
+    kP, // kP
+    kD, // kD
     1, // smallErrorRange
     100, // smallErrorTimeout
     3, // largeErrorRange
     500, // largeErrorTimeout
-    5 // slew rate
+    10 // slew rate
 };
  
 // turning PID
 lemlib::ChassisController_t angularController {
-    4, // kP
-    40, // kD
+    TkP, // kP
+    TkD, // kD
     1, // smallErrorRange
     100, // smallErrorTimeout
     3, // largeErrorRange
@@ -68,4 +77,4 @@ lemlib::ChassisController_t angularController {
     0 // slew rate
 };
 
-lemlib::Chassis chassis(lemDrive, lateralController, angularController, sensors);
+lemlib::Chassis LLchassis(lemDrive, lateralController, angularController, sensors);

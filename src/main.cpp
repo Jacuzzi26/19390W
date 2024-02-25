@@ -1,4 +1,4 @@
-#include "C:\Users\jackc\OneDrive\Desktop\Homework\Robotics\Vex\Over Under 23-24\COde\19390W\include\main.h"
+#include "main.h"
 class Triball {
 
 
@@ -10,9 +10,9 @@ class Triball {
         }
 
         void shoot() {
-            if (master.get_digital(DIGITAL_R1)) {
+            if (master.get_digital(DIGITAL_UP)) {
                 flywheelMotor = -127;
-            } else {if (master.get_digital(DIGITAL_R2)) {
+            } else {if (master.get_digital(DIGITAL_DOWN)) {
                 flywheelMotor = 127;
             } else {
                 flywheelMotor = 0;
@@ -32,9 +32,13 @@ class Triball {
         }
 
         void plow() {
-            wings.button_toggle(master.get_digital(DIGITAL_L2));
+            Lwing.button_toggle(master.get_digital(DIGITAL_L2));
+            Rwing.button_toggle(master.get_digital(DIGITAL_R2));
+      
         };
-
+        void hang() {
+          Hang.button_toggle(master.get_digital(DIGITAL_A));
+        }
 
 };
 // Chassis constructor
@@ -62,58 +66,9 @@ ez::Drive EZchassis (
   // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 36/60 which is 0.6
   ,.6
 );
-// class DT {
-//   public:
-//     void TurnPID (double target, double max, double swing){ //target is the angle to turn to. Max is the maximum power up to 127. swing is a way to change the turn radius. Negative moves the wheel on that point
-//       double kP = .1;
-//       double kI = 0;
-//       double kD = 0;
-//      double Pi = imu_sensor.get_yaw(); //defines initital position
-//      double P = target - Pi; // sets initialy error
-//      double I = 0;
-//      double D = 0;
-//      if (fabs(P)>180){
-//       target = (180-fabs(target))*target/fabs(target); // TODO check order of operations
-//       P = target - Pi;} //redefines target to give shortest path. if 
-//      while(fabs(P)>.1 && fabs(D)>0){
-//       double P0 = P; //copies our old p value before changing it
-//       P = target - imu_sensor.get_yaw();//iterates error, change pitch roll or yaw based on IMU mounting
-//       I += P; //defines integral
-//       D = (P-P0)/10.0; //derivative as degrees/ms
-//       double power = (kP*P + kI*I + kD*D); //puts all our statements together
-//       if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
-//         power = max*(power/fabs(power));
-//       }
-//       chassis.drive_set(-power, power);
-//       pros::delay(10);
-//     };
-//     };
-//       public:
-//     void DrivePID (double target, double max){ //target is the positio to drive to in inches. Max is the maximum power up to 127. 
-//       double kP = .1;
-//       double kI = 0;
-//       double kD = 0;
-//       chassis.drive_sensor_reset(); //zeroes the encoders
-//       double P = target;// sets initial error
-//       double I = 0;
-//       double D = 0; // sets inital derivative
-//      while(fabs(P)>.1 && fabs(D)>0){
-//       double P0 = P; //copies our old p value before changing it
-//       P = target - (3.25*6.28318530718 * 36/60/300 * (chassis.drive_sensor_right()+chassis.drive_sensor_left())/2);//iterates error, inches = wheelsize [in] * 2pi [1/revW] * pinionteeth [revM]/driventeeth[revW] / encoderclicks/revM [1/revM] * encoderclicks [UL]
-//       I += P; //defines integral
-//       D = (P-P0)/10.0; //derivative as inches/ms
-//       double power = (kP*P + kI*I + kD*D); //puts all our statements together
-//       if (fabs(power) > max) { // limits the maximum power, keeps the sign of the power
-//         power = max*(power/fabs(power));
-//       }
-//       chassis.drive_set(power, power);
-//       pros::delay(10);
-//     };
-//     };
-// };
+
 
 Triball triball = Triball();
-//DT PDrive = DT();
 
 /////
 // For installation, upgrading, documentations and tutorials, check out our website!
@@ -150,7 +105,7 @@ void initialize() {
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
     Auton("skills",skills),
-    Auton("Close", close),
+    Auton("Close", closeWP),
     Auton("Far", far)
   });
 
@@ -228,10 +183,11 @@ void opcontrol() {
   
   while (true) {
     if (!pros::competition::is_connected()) { 
-      if (master.get_digital_new_press(DIGITAL_B)) 
-        autonomous();
-
-    } 
+      if (master.get_digital(DIGITAL_B)){
+      autonomous();}
+      pros::lcd::print(3, "kP: %f", kP);
+      pros::lcd::print(4, "kD: %f", kD);
+    }
 
     //chassis.opcontrol_tank(); // Tank control
     EZchassis.opcontrol_arcade_standard(ez::SPLIT); // Standard split arcade
@@ -241,7 +197,8 @@ void opcontrol() {
 
     triball.intake();
     triball.plow();
-    triball.shoot();   
+    triball.shoot();
+    triball.hang();
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
 
     };
@@ -255,12 +212,13 @@ void close(){
 
 
 void closeWP(){
+LLchassis.setPose(0,0,0);
 LLchassis.moveTo(0, 0, 5000); //init
-LLchassis.moveTo(7.222, 41.381, 5000); //drive to the goal
+LLchassis.moveTo(7.222, 41.381, 5000,50); //drive to the goal
 Intake = 127; //outake
-LLchassis.moveTo(-6.051, 20.69, 5000);
-LLchassis.moveTo(-5.563, 7.515, 5000);
-LLchassis.moveTo(23.423, -19.324, 5000);
+LLchassis.moveTo(-6.051, 20.69, 5000,50);
+LLchassis.moveTo(-5.563, 7.515, 5000,50);
+LLchassis.moveTo(23.423, -19.324, 5000,50);
 
 };
 void far(){
@@ -272,6 +230,8 @@ void farWP(){};
 
 void skills() {
 
+LLchassis.setPose(0,0,0);
+LLchassis.turnTo(30,0,5000);
   
 };
 void nothing();
