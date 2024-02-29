@@ -37,7 +37,8 @@ class Triball {
       
         };
         void hang() {
-          Hang.button_toggle(master.get_digital(DIGITAL_A));
+          Hang.button_toggle(partner.get_digital(DIGITAL_A));
+          Balance.button_toggle(master.get_digital(DIGITAL_A))
         }
 
 };
@@ -156,9 +157,7 @@ void competition_initialize() {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-  EZchassis.drive_brake_set(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency
-
+void autonomous() {  EZchassis.drive_brake_set(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency
   ez::as::auton_selector.selected_auton_call(); // Calls selected auton from autonomous selector
 }
 
@@ -212,25 +211,23 @@ void close(){
 
 
 void closeWP(){
-LLchassis.setPose(0,0,0);
-LLchassis.moveTo(0, 0, 5000); //init
-LLchassis.moveTo(7.222, 41.381, 5000,50); //drive to the goal
-Intake = 127; //outake
-LLchassis.moveTo(-6.051, 20.69, 5000,50);
-LLchassis.moveTo(-5.563, 7.515, 5000,50);
-LLchassis.moveTo(23.423, -19.324, 5000,50);
+
 
 };
 void far(){
-LLchassis.moveTo(0, 0, 5000);//start
-LLchassis.moveTo(0, 20.427, 5000); // drive forward
-LLchassis.moveTo(-8.432, 48.86, 5000); // drive into goal
-LLchassis.moveTo(-26.789, 41.13, 5000);
-LLchassis.moveTo(-8.156, 48.86, 5000);
-LLchassis.moveTo(-29.549, 48.86, 5000);
-LLchassis.moveTo(0.954, 48.445, 5000);
-LLchassis.moveTo(-26.651, 57.555, 5000);
-LLchassis.moveTo(-2.221, 57.831, 5000);
+LLchassis.setPose(0,0,0);
+LLchassis.moveTo(0, 0, 5000);
+LLchassis.moveTo(0, 21.117, 5000);// driveforward
+LLchassis.moveTo(-26.362, 52.172, 5000); // lineup with middle triball
+LLchassis.turnTo(-50,52.172,5000); //turn away from goal
+LLchassis.moveTo(-10.076, 52.172, 5000);
+LLchassis.moveTo(1.242, 52.172, 5000);
+LLchassis.moveTo(-10.628, 52.172, 5000);
+LLchassis.moveTo(1.38, 52.31, 5000);
+LLchassis.moveTo(-29.26, 62.248, 5000);
+LLchassis.moveTo(-30.089, 39.06, 5000);
+
+
 
 };
 
