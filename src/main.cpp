@@ -222,9 +222,17 @@ LLchassis.moveTo(23.423, -19.324, 5000,50);
 
 };
 void far(){
+LLchassis.moveTo(0, 0, 5000);//start
+LLchassis.moveTo(0, 20.427, 5000); // drive forward
+LLchassis.moveTo(-8.432, 48.86, 5000); // drive into goal
+LLchassis.moveTo(-26.789, 41.13, 5000);
+LLchassis.moveTo(-8.156, 48.86, 5000);
+LLchassis.moveTo(-29.549, 48.86, 5000);
+LLchassis.moveTo(0.954, 48.445, 5000);
+LLchassis.moveTo(-26.651, 57.555, 5000);
+LLchassis.moveTo(-2.221, 57.831, 5000);
 
 };
-void farWP(){};
 
 
 
